@@ -1,0 +1,6 @@
+EMAIL_SERVICE="Yahoo" \
+SENDER_EMAIL="bar@yahoo.com" \
+SENDER_PASSWORD="<pass>" \
+USER_EMAIL="foo@gmail.com" \
+RECHECK_CRON_SCHEDULE="* */5 * * * *" \
+yarn start
