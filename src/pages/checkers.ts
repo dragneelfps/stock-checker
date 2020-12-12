@@ -3,14 +3,24 @@ import puppeteer from "puppeteer";
 import {logger} from "../logging";
 import cheerio from "cheerio";
 
-export const RPTechIndiaChecker: StatusChecker = async url => {
-    const browser = await puppeteer.launch()
-    const page = await browser.newPage()
+let browser: puppeteer.Browser | undefined
+let page: puppeteer.Page | undefined
+
+
+async function loadPage(url: string): Promise<cheerio.Root> {
+    if (!browser || !browser.isConnected()) {
+        browser = await puppeteer.launch()
+    }
+    page = await browser.newPage()
     logger.info(`Checking ${url}`)
-
     await page.goto(url)
+    const content = await page.content()
+    await page.close()
+    return cheerio.load(content)
+}
 
-    const $ = cheerio.load(await page.content())
+export const RPTechIndiaChecker: StatusChecker = async url => {
+    const $ = await loadPage(url)
 
     const availability = $("span.rs2").html()
 
@@ -18,9 +28,25 @@ export const RPTechIndiaChecker: StatusChecker = async url => {
         throw new Error("html error")
     }
 
-    const inStock = availability.toLowerCase().includes("in stock")
+    return availability.toLowerCase().includes("in stock")
+}
 
-    await browser.close()
+export const MDComputersChecker: StatusChecker = async url => {
+    const $ = await loadPage(url)
+    const availability = $("div.stock").html()
 
-    return inStock
+    if (!availability) {
+        throw new Error("html error")
+    }
+
+    return availability.toLowerCase().includes("in stock")
+}
+
+export const VedantComputersChecker: StatusChecker = async url => {
+    const $ = await loadPage(url)
+    const info = $("div.product-info")
+    if (!info) {
+        throw new Error("html error")
+    }
+    return !info.hasClass("out-of-stock")
 }

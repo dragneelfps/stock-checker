@@ -17,5 +17,13 @@ export const pages: PageConfig[] = [
     {
         url: "https://rptechindia.in/nvidia-geforce-rtx-3060-ti.html",
         page: "RPTechIndia"
+    },
+    {
+        url: "https://mdcomputers.in/gigabyte-rtx-3060-ti-gv-n306teagle-8gd.html",
+        page: "MDComputers"
+    },
+    {
+        url: "https://www.vedantcomputers.com/gigabyte-geforce-rtx-3060-ti-eagle-oc-8gb-gddr6?search=3060&description=true",
+        page: "VedantComputers"
     }
 ]
