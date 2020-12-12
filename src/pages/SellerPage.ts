@@ -1,4 +1,4 @@
-import {RPTechIndiaChecker} from "./RPTechIndia";
+import {RPTechIndiaChecker} from "./checkers";
 
 export type PageConfig = {
     url: string,
