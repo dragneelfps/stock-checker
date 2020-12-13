@@ -1,10 +1,10 @@
 import schedule from "node-schedule"
 import {logger} from "./logging";
-import {sendMail} from "./mail";
 import {CRON_SCHEDULE, pages} from "./config";
 import {check, PageConfig} from "./pages/SellerPage";
+import {getNotifier, NotifierType} from "./notfiers";
 
-async function work() {
+async function work(notify: NotifierType) {
     const pagesWithResult = new Array<PageConfig & { inStock: boolean }>();
     for (const page of pages) {
         let inStock = await check(page)
@@ -14,22 +14,18 @@ async function work() {
     }
     const inStockPages = pagesWithResult.filter(({inStock}) => inStock)
     if (inStockPages.length > 0) {
-        logger.info(`Sending emails for ${inStockPages.length} pages`)
-        let mailBody = ""
-        for (const page of inStockPages) {
-            mailBody += `${page.url}\n`
-        }
-        await sendMail({subject: `${inStockPages.length} items are in stock`, body: mailBody})
+        await notify(inStockPages.map(({url}) => url))
     }
-
 }
 
-function main() {
+async function main() {
+    const notify = await getNotifier()
     let workId = 0
-    const job = schedule.scheduleJob(CRON_SCHEDULE, work)
+    const job = schedule.scheduleJob(CRON_SCHEDULE, () => work(notify))
     job.on("run", () => {
         logger.info(`Started ${++workId}`)
     })
 }
 
 main()
+    .catch(e => logger.error(e))

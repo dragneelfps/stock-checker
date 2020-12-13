@@ -2,14 +2,30 @@ import {PageConfig} from "./pages/SellerPage";
 
 export const CRON_SCHEDULE = process.env["RECHECK_CRON_SCHEDULE"]!!
 
-export const mail = {
-    email_service: process.env["EMAIL_SERVICE"]!!,
+const mailConfig = {
+    email_service: process.env["EMAIL_SERVICE"],
     sender: {
-        email: process.env["SENDER_EMAIL"]!!,
-        password: process.env["SENDER_PASSWORD"]!!,
+        email: process.env["SENDER_EMAIL"],
+        password: process.env["SENDER_PASSWORD"],
     },
     user: {
-        email: process.env["USER_EMAIL"]!!
+        email: process.env["USER_EMAIL"]
+    }
+}
+
+const telegramConfig = {
+    token: process.env["TELEGRAM_BOT_TOKEN"],
+    chatId: process.env["TELEGRAM_CHAT_ID"],
+}
+
+export const notifications = {
+    email: {
+        enabled: false,
+        ...mailConfig
+    },
+    telegram: {
+        enabled: false,
+        ...telegramConfig
     }
 }
 
